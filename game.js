@@ -27,15 +27,25 @@ const Player = (playerNum, marker) => {
 const players = (function () {
   const playerOne = Player("1", "X");
   const playerTwo = Player("2", "O");
-  return { playerOne, playerTwo };
+  let currentPlayer = playerOne;
+
+  const updateCurrentPlayer = () => {
+    return (currentPlayer =
+      currentPlayer === playerOne ? playerTwo : playerOne);
+  };
+
+  let currenPlayerMarker = () => {
+    return updateCurrentPlayer().marker;
+  };
+
+  return { playerOne, playerTwo, updateCurrentPlayer, currenPlayerMarker };
 })();
 
 // Game flow
 const game = (function () {
   const board = gameBoard.getWholeBoard();
 
-  const placeMarker = (marker, e) => {
-    const position = e;
+  const placeMarker = (marker, position) => {
     board.splice(position, 1, marker);
     console.log(board);
   };
@@ -47,14 +57,16 @@ const displayControl = (function () {
   const generateGrid = (function (gridSize) {
     const container = document.querySelector(".container");
     container.style.gridTemplateColumns = `repeat(${gridSize / 3}, 1fr)`;
+
     for (let i = 0; i < gridSize; i++) {
       const cell = document.createElement("div");
       cell.dataset.position = i;
       cell.addEventListener("click", (e) => {
         const position = e.target.dataset.position;
-        game.placeMarker("X", position);
-        console.log(e.target.dataset.position);
+
+        game.placeMarker(players.currenPlayerMarker(), position);
       });
+
       cell.classList.add("cell");
       container.appendChild(cell);
     }
