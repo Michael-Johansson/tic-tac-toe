@@ -1,0 +1,21 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #333339;
+}
+
+.container {
+  display: grid;
+  height: 600px;
+  width: 600px;
+}
+
+.cell {
+  background-color: white;
+  border: 1px solid red;
+}
