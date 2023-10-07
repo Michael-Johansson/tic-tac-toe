@@ -1,76 +1,56 @@
 "use strict";
 
-// Game board
+const container = document.querySelector(".container");
+container.style.gridTemplateColumns = `repeat(${9 / 3}, 1fr)`;
+
 const gameBoard = (function () {
-  const rows = 3;
-  const columns = 3;
   const board = [];
 
-  for (let i = 0; i < rows; i++) {
-    board[i] = [];
-    for (let j = 0; j < columns; j++) {
-      board[i].push("");
-    }
+  for (let i = 0; i < 9; i++) {
+    board.push("");
   }
 
-  const getWholeBoard = () => board[0].concat(board[1], board[2]);
-  const boardLength = getWholeBoard().length;
+  const getBoard = () => board;
 
-  return { getWholeBoard, boardLength };
+  const setMarker = (player, index) => {
+    board.splice(index, 1, player);
+  };
+
+  return { setMarker, getBoard };
 })();
 
-//Player factory
-const Player = (playerNum, marker) => {
-  return { playerNum, marker };
+const Player = (marker) => {
+  return { marker };
 };
 
 const players = (function () {
-  const playerOne = Player("1", "X");
-  const playerTwo = Player("2", "O");
-  let currentPlayer = playerOne;
+  const playerOne = Player("X");
+  const playerTwo = Player("O");
+  const activePlayer = playerOne;
 
-  const updateCurrentPlayer = () => {
-    return (currentPlayer =
-      currentPlayer === playerOne ? playerTwo : playerOne);
+  const setActivePlayer = () => {
+    activePlayer = activePlayer === playerOne ? playerTwo : playerOne;
   };
 
-  let currenPlayerMarker = () => {
-    return updateCurrentPlayer().marker;
-  };
+  const getActivePlayer = () => activePlayer;
 
-  return { playerOne, playerTwo, updateCurrentPlayer, currenPlayerMarker };
+  return { setActivePlayer, getActivePlayer };
 })();
 
-// Game flow
-const game = (function () {
-  const board = gameBoard.getWholeBoard();
-
-  const placeMarker = (marker, position) => {
-    board.splice(position, 1, marker);
-    console.log(board);
-  };
-  return { placeMarker, board };
-})();
-
-//Display controller
 const displayControl = (function () {
-  const generateGrid = (function (gridSize) {
-    const container = document.querySelector(".container");
-    container.style.gridTemplateColumns = `repeat(${gridSize / 3}, 1fr)`;
-
-    for (let i = 0; i < gridSize; i++) {
+  const createGrid = (function () {
+    for (let i = 0; i < 9; i++) {
       const cell = document.createElement("div");
-      cell.dataset.position = i;
-      cell.addEventListener("click", (e) => {
-        const position = e.target.dataset.position;
-
-        game.placeMarker(players.currenPlayerMarker(), position);
-      });
-
       cell.classList.add("cell");
       container.appendChild(cell);
     }
-  })(gameBoard.boardLength);
+  })();
 
-  return { generateGrid };
+  const renderGrid = () => {
+    container.childNodes.forEach((cell, index) => {
+      cell.textContent = gameBoard.getBoard()[index];
+    });
+  };
+
+  return { renderGrid };
 })();
